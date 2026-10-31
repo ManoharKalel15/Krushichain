@@ -146,7 +146,7 @@ export default function InsurancePage() {
             </div>
             
             {/* Hologram aesthetic on the right */}
-            <div style={{ display: 'flex', gap: '20px', opacity: 0.8, display: window.innerWidth > 900 ? 'flex' : 'none' }}>
+            <div style={{ gap: '20px', opacity: 0.8, display: window.innerWidth > 900 ? 'flex' : 'none' }}>
               <div style={{ textAlign: 'center' }}>
                 <CloudRain size={40} color="#64b5f6" />
                 <div style={{ fontSize: '12px', fontFamily: 'monospace', marginTop: '6px' }}>METEOROLOGY</div>

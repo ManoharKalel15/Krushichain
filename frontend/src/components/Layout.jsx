@@ -2,9 +2,11 @@ import React, { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import toast from 'react-hot-toast'
+import WalletButton from './WalletButton'
 
 const FARMER_NAV = [
   { id: 'dashboard',  icon: '🏠', label: 'मुख्य पटल',     path: '/app/dashboard' },
+  { id: 'web3hub',    icon: '⛓️', label: 'MST Web3 Hub',  path: '/app/web3-hub'  },
   { id: 'lands',      icon: '🗺️', label: 'जमीन नोंदणी',   path: '/app/lands'     },
   { id: 'crops',      icon: '🌾', label: 'पीक व्यवस्थापन', path: '/app/crops'     },
   { id: 'iot',        icon: '📡', label: 'IoT सेन्सर',     path: '/app/iot'       },
@@ -21,6 +23,7 @@ const FARMER_NAV = [
 
 const COLLECTOR_NAV = [
   { id: 'cdashboard', icon: '📊', label: 'Dashboard',         path: '/collector/dashboard' },
+  { id: 'web3hub',    icon: '⛓️', label: 'MST Web3 Hub',      path: '/app/web3-hub'        },
   { id: 'cfarmers',   icon: '🧑‍🌾', label: 'शेतकरी List',       path: '/collector/farmers'   },
   { id: 'cclaims',    icon: '🛡️', label: 'विमा दावे',          path: '/collector/claims'    },
   { id: 'csubsidies', icon: '💰', label: 'अनुदान अर्ज',        path: '/collector/subsidies' },
@@ -93,7 +96,8 @@ export default function Layout({ children }) {
               {nav.find(n => location.pathname.startsWith(n.path))?.label || 'KrushiChain'}
             </div>
           </div>
-          <div className="topbar-right">
+          <div className="topbar-right" style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <WalletButton />
             <div style={{ fontSize: 12, color: 'var(--text3)', textAlign: 'right' }}>
               <div style={{ fontWeight: 700, color: 'var(--text)', fontSize: 14 }}>{user?.name}</div>
               <div>{user?.role === 'shetkari' ? '🧑‍🌾 शेतकरी' : user?.role === 'collector' ? '👨‍💼 Collector' : '🏛️ Minister'}</div>

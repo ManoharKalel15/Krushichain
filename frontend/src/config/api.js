@@ -1,7 +1,16 @@
 // src/config/api.js
 import axios from 'axios'
 
-const api = axios.create({ baseURL: '/api', timeout: 15000 })
+const getBaseURL = () => {
+  const envUrl = import.meta.env.VITE_API_URL
+  if (envUrl) {
+    const clean = envUrl.replace(/\/+$/, '')
+    return clean.endsWith('/api') ? clean : `${clean}/api`
+  }
+  return '/api'
+}
+
+const api = axios.create({ baseURL: getBaseURL(), timeout: 15000 })
 
 api.interceptors.request.use(cfg => {
   const token = localStorage.getItem('kc_token')

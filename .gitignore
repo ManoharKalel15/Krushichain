@@ -39,3 +39,6 @@ Thumbs.db
 # Misc
 *.pem
 .cache/
+.vercel/
+backend/artifacts/
+backend/cache/

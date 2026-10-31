@@ -133,17 +133,18 @@ export default function DashboardPage() {
             <h3 style={{ fontSize: 18, fontWeight: 900, color: '#1e293b', marginBottom: 20 }}>⚡ जलद Navigation</h3>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               {[
+                ['⛓️ MST Web3 Hub',  '/app/web3-hub', '#059669'],
                 ['📍 GPS नकाशा',    '/app/map', '#2563eb'],
                 ['🧠 कृषी-AI',      '/app/ai-predictor', '#7c3aed'],
                 ['🚚 पुरवठा साखळी', '/app/supply-chain', '#f59e0b'],
                 ['📱 QR Code',      '/app/qr', '#10b981'],
-                ['🗺️ जमीन नोंद', '/app/lands', '#059669'],
+                ['🗺️ जमीन नोंद', '/app/lands', '#0d9488'],
                 ['📦 बाजारपेठ',     '/app/market', '#db2777'],
               ].map(([label, path, color], i) => (
                 <button 
                   key={i} 
                   style={{
-                    background: `${color}15`, color: color, fontWeight: 800, padding: '12px', borderRadius: 12, border: 'none',
+                    background: `${color}15`, color: color, fontWeight: 800, padding: '12px', borderRadius: 12,
                     fontSize: 14, cursor: 'pointer', transition: 'all 0.2s', border: `1px solid ${color}30`
                   }}
                   onMouseOver={(e) => { e.currentTarget.style.background = color; e.currentTarget.style.color = '#fff' }}

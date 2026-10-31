@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 import api from '../config/api';
 import { useAuth } from '../context/AuthContext';
+import { useWallet } from '../context/WalletContext';
 import { Alert } from '../components/UI';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Edit3, Save, X, MapPin, Phone, CreditCard, Building2, Calendar, ShieldCheck, Leaf, Map, LogOut, ChevronRight, Fingerprint, BadgeCheck } from 'lucide-react';
+import { User, Edit3, Save, X, MapPin, Phone, CreditCard, Building2, Calendar, ShieldCheck, Leaf, Map, LogOut, ChevronRight, Fingerprint, BadgeCheck, Wallet, ExternalLink, Copy, Check, Globe } from 'lucide-react';
 
 const DISTRICTS = ['अहमदनगर','अकोला','अमरावती','औरंगाबाद','बीड','भंडारा','नागपूर','नांदेड','नाशिक','पुणे','सांगली','सातारा','सोलापूर','ठाणे','यवतमाळ'];
 
@@ -171,6 +172,9 @@ export default function ProfilePage() {
           </div>
         </motion.div>
       )}
+
+      {/* Web3 & MST Chain Wallet Card */}
+      <Web3WalletCard />
 
       {/* Profile Details Card */}
       <motion.div
@@ -372,6 +376,217 @@ export default function ProfilePage() {
       >
         <LogOut size={20} /> Logout करा
       </motion.button>
+    </motion.div>
+  );
+}
+
+function Web3WalletCard() {
+  const {
+    walletAddress,
+    isConnected,
+    isConnecting,
+    network,
+    networkKey,
+    balance,
+    connect,
+    disconnect,
+    switchNet,
+    getAddressExplorerUrl
+  } = useWallet();
+
+  const [copied, setCopied] = useState(false);
+
+  return (
+    <motion.div
+      initial={{ y: 20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ delay: 0.15 }}
+      style={{
+        background: '#fff',
+        borderRadius: '20px',
+        padding: '24px',
+        boxShadow: '0 4px 15px rgba(0,0,0,0.05)',
+        border: '1px solid var(--border)',
+        marginBottom: '20px'
+      }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ background: '#fef3c7', padding: '10px', borderRadius: '12px', fontSize: '20px' }}>
+            🦊
+          </div>
+          <div>
+            <div style={{ fontWeight: 800, fontSize: '16px', color: '#0f172a' }}>MST Chain Web3 वॉलेट</div>
+            <div style={{ fontSize: '12px', color: 'var(--text3)' }}>Decentralized Identity & Smart Contract Signature</div>
+          </div>
+        </div>
+
+        {isConnected && (
+          <span
+            style={{
+              fontSize: '11px',
+              fontWeight: 800,
+              padding: '4px 10px',
+              borderRadius: '20px',
+              background: networkKey === 'mstMainnet' ? '#ecfdf5' : '#fffbeb',
+              color: networkKey === 'mstMainnet' ? '#047857' : '#b45309',
+              border: `1px solid ${networkKey === 'mstMainnet' ? '#a7f3d0' : '#fde68a'}`
+            }}
+          >
+            {networkKey === 'mstMainnet' ? '🟢 MST Mainnet' : '🟡 MST Testnet'}
+          </span>
+        )}
+      </div>
+
+      {isConnected ? (
+        <div>
+          <div style={{ background: '#f8fafc', padding: '14px', borderRadius: '14px', border: '1px solid #e2e8f0', marginBottom: '14px' }}>
+            <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 600, marginBottom: '4px' }}>
+              जोडलेले वॉलेट (Connected Address):
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontFamily: 'monospace', fontWeight: 700, fontSize: '13px', color: '#0f172a' }}>
+                {walletAddress}
+              </span>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(walletAddress);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                  }}
+                  style={{
+                    border: 'none',
+                    background: copied ? '#10b98122' : '#e2e8f0',
+                    color: copied ? '#10b981' : '#475569',
+                    padding: '5px 10px',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}
+                >
+                  {copied ? <Check size={12} /> : <Copy size={12} />}
+                  {copied ? 'Copied' : 'Copy'}
+                </button>
+                <a
+                  href={getAddressExplorerUrl(walletAddress)}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    background: '#e2e8f0',
+                    color: '#475569',
+                    padding: '5px 10px',
+                    borderRadius: '8px',
+                    textDecoration: 'none',
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}
+                >
+                  <ExternalLink size={12} /> Explorer
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+            <div style={{ background: '#ecfdf5', padding: '12px', borderRadius: '14px', border: '1px solid #a7f3d0' }}>
+              <div style={{ fontSize: '11px', color: '#047857', fontWeight: 600 }}>MSTC टोकन बॅलन्स:</div>
+              <div style={{ fontSize: '18px', fontWeight: 900, color: '#065f46' }}>
+                {balance} {network.nativeCurrency.symbol}
+              </div>
+            </div>
+
+            <div style={{ background: '#f1f5f9', padding: '12px', borderRadius: '14px', border: '1px solid #e2e8f0' }}>
+              <div style={{ fontSize: '11px', color: '#475569', fontWeight: 600 }}>नेटवर्क स्विच:</div>
+              <div style={{ display: 'flex', gap: '6px', marginTop: '4px' }}>
+                <button
+                  onClick={() => switchNet('mstMainnet')}
+                  style={{
+                    flex: 1,
+                    fontSize: '11px',
+                    fontWeight: 800,
+                    padding: '4px 6px',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    background: networkKey === 'mstMainnet' ? '#10b981' : '#fff',
+                    color: networkKey === 'mstMainnet' ? '#fff' : '#475569',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Mainnet
+                </button>
+                <button
+                  onClick={() => switchNet('mstTestnet')}
+                  style={{
+                    flex: 1,
+                    fontSize: '11px',
+                    fontWeight: 800,
+                    padding: '4px 6px',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    background: networkKey === 'mstTestnet' ? '#f59e0b' : '#fff',
+                    color: networkKey === 'mstTestnet' ? '#fff' : '#475569',
+                    cursor: 'pointer'
+                  }}
+                >
+                  Testnet
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <button
+            onClick={disconnect}
+            style={{
+              width: '100%',
+              background: '#fef2f2',
+              border: '1px solid #fecaca',
+              color: '#dc2626',
+              padding: '10px',
+              borderRadius: '12px',
+              fontWeight: 700,
+              fontSize: '13px',
+              cursor: 'pointer'
+            }}
+          >
+            🔌 वॉलेट डिस्कनेक्ट करा
+          </button>
+        </div>
+      ) : (
+        <div style={{ textAlign: 'center', padding: '16px 0' }}>
+          <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '16px' }}>
+            तुमचे MetaMask वॉलेट कनेक्ट करून जमिनीची नोंदणी ब्लॉकचेनवर स्वाक्षरी करा.
+          </p>
+          <button
+            onClick={() => connect()}
+            disabled={isConnecting}
+            style={{
+              background: 'linear-gradient(135deg, #10b981, #059669)',
+              color: '#fff',
+              border: 'none',
+              padding: '12px 24px',
+              borderRadius: '14px',
+              fontWeight: 800,
+              fontSize: '14px',
+              cursor: isConnecting ? 'wait' : 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)'
+            }}
+          >
+            <span>🦊</span>
+            {isConnecting ? 'कनेक्ट करत आहे...' : 'MetaMask वॉलेट जोडा'}
+          </button>
+        </div>
+      )}
     </motion.div>
   );
 }

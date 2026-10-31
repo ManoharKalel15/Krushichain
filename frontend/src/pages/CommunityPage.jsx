@@ -17,7 +17,8 @@ export default function CommunityPage() {
 
   useEffect(() => {
     api.get(`/chat/${ROOM}`).then(r => { setMessages(r.data.messages||[]); setLoading(false) }).catch(()=>setLoading(false))
-    const socket = io('/', { path: '/socket.io', transports: ['websocket','polling'] })
+    const socketUrl = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace(/\/api\/?$/, '') : '/'
+    const socket = io(socketUrl, { path: '/socket.io', transports: ['websocket','polling'] })
     socketRef.current = socket
     socket.on('connect', () => { setConnected(true); socket.emit('join', { userId: user?._id, name: user?.name, village: user?.village, role: user?.role }); socket.emit('joinRoom', ROOM) })
     socket.on('disconnect', () => setConnected(false))

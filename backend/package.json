@@ -4,7 +4,10 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "compile": "hardhat compile",
+    "deploy:testnet": "hardhat run scripts/deploy.js --network mstTestnet",
+    "deploy:mainnet": "hardhat run scripts/deploy-mainnet.js --network mstMainnet"
   },
   "dependencies": {
     "axios": "^1.6.2",
@@ -23,6 +26,8 @@
     "socket.io": "^4.7.2"
   },
   "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "hardhat": "^2.29.1",
     "nodemon": "^3.0.2"
   }
 }

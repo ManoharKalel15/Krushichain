@@ -2,9 +2,11 @@ import React from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { AuthProvider, useAuth } from './context/AuthContext'
+import { WalletProvider } from './context/WalletContext'
 import Layout from './components/Layout'
 import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/DashboardPage'
+import Web3HubPage from './pages/Web3HubPage'
 import LandPage from './pages/LandPage'
 import CropPage from './pages/CropPage'
 import MarketPage from './pages/MarketPage'
@@ -39,6 +41,7 @@ function AppRoutes() {
       <Route path="/" element={user?<Navigate to={['collector','minister'].includes(user.role)?'/collector/dashboard':'/app/dashboard'} replace/>:<LoginPage/>}/>
       <Route path="/farmer/:krushiId" element={<PublicFarmerProfile />} />
       <Route path="/app/dashboard" element={<ProtectedRoute roles={['shetkari']}><DashboardPage/></ProtectedRoute>}/>
+      <Route path="/app/web3-hub" element={<ProtectedRoute><Web3HubPage/></ProtectedRoute>}/>
       <Route path="/app/lands" element={<ProtectedRoute roles={['shetkari']}><LandPage/></ProtectedRoute>}/>
       <Route path="/app/crops" element={<ProtectedRoute roles={['shetkari']}><CropPage/></ProtectedRoute>}/>
       <Route path="/app/market" element={<ProtectedRoute><MarketPage/></ProtectedRoute>}/>
@@ -65,10 +68,12 @@ function AppRoutes() {
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <AppRoutes/>
-        <Toaster position="top-right" toastOptions={{duration:3500,style:{fontFamily:'inherit',fontSize:14}}}/>
-      </BrowserRouter>
+      <WalletProvider>
+        <BrowserRouter>
+          <AppRoutes/>
+          <Toaster position="top-right" toastOptions={{duration:3500,style:{fontFamily:'inherit',fontSize:14}}}/>
+        </BrowserRouter>
+      </WalletProvider>
     </AuthProvider>
   )
 }

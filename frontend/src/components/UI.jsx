@@ -74,9 +74,36 @@ export function LiveDot() {
 
 export function BlockchainBadge({ txHash }) {
   if (!txHash) return null
+  const isRealTx = txHash.startsWith('0x') && txHash.length >= 64
+  const explorerBase = import.meta.env.VITE_MST_TESTNET_EXPLORER || 'https://testnet.mstscan.com'
+  const url = isRealTx ? `${explorerBase}/tx/${txHash}` : null
+
   return (
-    <div className="tx-wrap mt-8">
-      ⛓️ TX: {txHash.slice(0, 20)}...{txHash.slice(-8)}
+    <div className="tx-wrap mt-8" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+      <span>⛓️ MST Chain:</span>
+      {url ? (
+        <a
+          href={url}
+          target="_blank"
+          rel="noreferrer"
+          style={{
+            color: '#10b981',
+            fontWeight: 700,
+            fontFamily: 'monospace',
+            textDecoration: 'none',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '3px'
+          }}
+          title="MSTScan वर पहा"
+        >
+          {txHash.slice(0, 10)}...{txHash.slice(-8)} ↗
+        </a>
+      ) : (
+        <span style={{ fontFamily: 'monospace' }}>
+          {txHash.slice(0, 14)}...
+        </span>
+      )}
     </div>
   )
 }

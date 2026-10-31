@@ -37,9 +37,32 @@ app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 500 }))
 // Serve uploaded files statically
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('✅ MongoDB Atlas Connected!'))
-  .catch(err => { console.error('❌ MongoDB:', err.message); process.exit(1) })
+let isDbConnecting = false;
+async function connectDB() {
+  if (mongoose.connection.readyState >= 1) return;
+  if (isDbConnecting) return;
+  isDbConnecting = true;
+  try {
+    await mongoose.connect(process.env.MONGO_URI, {
+      serverSelectionTimeoutMS: 8000
+    });
+    console.log('✅ MongoDB Connected!');
+  } catch (err) {
+    console.error('❌ MongoDB:', err.message);
+  } finally {
+    isDbConnecting = false;
+  }
+}
+
+connectDB();
+
+// Middleware ensuring DB connection for serverless/cold starts
+app.use(async (req, res, next) => {
+  if (mongoose.connection.readyState === 0) {
+    await connectDB();
+  }
+  next();
+});
 
 // Initialize Blockchain
 require('./utils/blockchain').initBlockchain();
@@ -57,6 +80,7 @@ app.use('/api/iot',       require('./routes/iot'))
 app.use('/api/collector', require('./routes/collector'))
 app.use('/api/analytics', require('./routes/analytics'))
 app.use('/api/ai',        require('./routes/ai'))
+app.use('/api/blockchain',require('./routes/blockchain'))
 app.get('/api/health', (req, res) =>
   res.json({
     status: 'ok',
@@ -96,8 +120,14 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Server error', message: err.message })
 })
 
-const PORT = process.env.PORT || 5000
-server.listen(PORT, () => {
-  console.log(`\n🌾 KrushiChain Backend: http://localhost:${PORT}`)
-  console.log(`📡 Socket.IO ready\n`)
-})
+const PORT = process.env.PORT || 5001
+
+if (!process.env.VERCEL) {
+  server.listen(PORT, () => {
+    console.log(`\n🌾 KrushiChain Backend: http://localhost:${PORT}`)
+    console.log(`📡 Socket.IO ready\n`)
+  })
+}
+
+module.exports = app
+module.exports.server = server
